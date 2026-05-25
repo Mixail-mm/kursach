@@ -5,16 +5,14 @@
 #include <time.h>
 #include <sys/stat.h>
 #include "stats_lib.h"
-
 #ifdef _WIN32
 #include <windows.h>
 #define MKDIR(dir) _mkdir(dir)
 #else
 #define MKDIR(dir) mkdir(dir, 0755)
 #endif
-
 #define PI 3.14159265358979323846f
-#define RE 6371000
+#define RE 6371000.0f
 
 typedef struct {
     float timestamp_ms;
@@ -95,7 +93,6 @@ int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(65001);
 #endif
-
     srand((unsigned int)time(NULL));
 
     circ_t parameters = {
@@ -122,7 +119,7 @@ int main() {
 
     for (int i = 0; i < 5; i++) {
         if (fscanf(fParams, "%f %f %f", &noise_params[i].mathExp, &noise_params[i].stdDev, &noise_params[i].median) != 3) {
-            fprintf(stderr, "[ОШИБКА] Ошибка чтения параметров шума.\n");
+            fprintf(stderr, "[ОШИБКА] Ошибка чтения параметров шума (строка %d).\n", i + 1);
             free(noise_params); fclose(fParams); free(tr); return 1;
         }
     }
@@ -138,7 +135,6 @@ int main() {
 
     save_to_file(OUTPUT_DIR "/trajectory.txt", tr, count, "w");
     save_to_file(OUTPUT_DIR "/trajectory.bin", tr, count, "wb");
-
     free(tr); free(noise_params);
     printf("[ГОТОВО] Траектория сгенерирована. Файлы сохранены в: %s\n", OUTPUT_DIR);
     return 0;
